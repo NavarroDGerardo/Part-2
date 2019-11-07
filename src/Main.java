@@ -5,9 +5,9 @@ import java.util.Stack;
 import java.io.*;
 
 public class Main {
-    private static Stack<Character> pushdown = new Stack<>();
+    //private static Stack<Character> pushdown = new Stack<>();
     private static HashMap<Character, ArrayList<String>> transitions = new HashMap<>();
-    private static String testString = "";
+    private static String testString = "babbb";
     private static int index = 0;
 
     public static void main(String[] args) throws IOException{
@@ -43,12 +43,42 @@ public class Main {
         }
 
         System.out.println("Production of the grammar: " + transitions);
-        pushdown.add(start);
-        checkString();
+        Stack<Character> PDA = new Stack<>();
+        PDA.add(start);
+        System.out.println(checkString(PDA));
     }
 
-    private static boolean checkString(){
-        if(pushdown.isEmpty() && index ==0)
-        return false;
+    private static boolean checkString(Stack<Character> PDA){
+        System.out.println(PDA);
+        if(PDA.isEmpty() && index == testString.length()-1) return true;
+
+        char c = PDA.pop();
+        if(transitions.containsKey(c)){
+            for(int i = 0; i < transitions.get(c).size(); i++){
+                String s = transitions.get(c).get(i);
+                Stack<Character> auxStack = PDA;
+                for(int j = s.length()-1; j >= 0; j--){
+                    auxStack.add(s.charAt(j));
+                }
+                checkString(auxStack);
+            }
+        }else{
+            while(index < testString.length() && PDA.peek() == testString.charAt(index)){
+                PDA.pop();
+                index++;
+            }
+
+            if(!PDA.empty()){
+                char auxC = PDA.pop();
+                if(transitions.containsKey(auxC)){
+                    checkString(PDA);
+                }else{
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
     }
 }
