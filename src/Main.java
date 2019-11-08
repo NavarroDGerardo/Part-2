@@ -1,3 +1,5 @@
+import com.sun.deploy.panel.AbstractRadioPropertyGroup;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -48,33 +50,34 @@ public class Main {
     }
 
     private static boolean checkString(Stack<Character> PDA, String testString){
+        System.out.println(PDA + " -> " + testString);
+
         if(PDA.empty() && testString.equals("")) return true;
         if(testString.equals("") && !PDA.empty()) return false;
-        int index = 0;
 
-        while(!PDA.empty() || index < testString.length()){
-            System.out.println(PDA + " testString: " + testString);
-            char c = PDA.pop();
-            if(transitions.containsKey(c)){
-                for(int i = 0; i < transitions.get(c).size(); i++){
-                    String s = transitions.get(c).get(i);
-                    System.out.println(c + " -> " + s);
-                    System.out.println("PDA: " + PDA);
-                    Stack<Character> auxStack = PDA;
-                    for(int j = s.length()-1; j >= 0; j--){
-                        auxStack.add(s.charAt(j));
-                    }
-                    checkString(auxStack, testString);
+        char c = PDA.pop();
+        if(transitions.containsKey(c)){
+            ArrayList<Stack<Character>> possibleWays = new ArrayList<>();
+            for(int i = 0; i < transitions.get(c).size(); i++){
+                String s = transitions.get(c).get(i);
+                //System.out.println(c + " -> " + s);
+                //System.out.println("PDA: " + PDA);
+                Stack<Character> auxStack = PDA;
+                for(int j = s.length()-1; j >= 0; j--){
+                    auxStack.add(s.charAt(j));
                 }
-            }else{
-                if(c == testString.charAt(index)){
-                    testString = testString.substring(index+1);
-                }else{
-                   return false;
-                }
+                possibleWays.add(auxStack);
             }
-            index++;
+
+            
+
+        }else{
+            if(c == testString.charAt(0)){
+                testString = testString.substring(1);
+                checkString(PDA, testString);
+            }
         }
+
 
         return false;
     }
