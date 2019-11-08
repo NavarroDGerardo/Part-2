@@ -1,5 +1,3 @@
-import com.sun.deploy.panel.AbstractRadioPropertyGroup;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -54,23 +52,31 @@ public class Main {
 
         if(PDA.empty() && testString.equals("")) return true;
         if(testString.equals("") && !PDA.empty()) return false;
+        if(!testString.equals("") && PDA.empty()) return false;
 
         char c = PDA.pop();
         if(transitions.containsKey(c)){
-            ArrayList<Stack<Character>> possibleWays = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            while (!PDA.empty()){
+                sb.append(PDA.pop());
+            }
             for(int i = 0; i < transitions.get(c).size(); i++){
+                //System.out.println(sb);
+                Stack<Character> auxStack = new Stack<>();
+
+                for(int k=sb.length() - 1; k>= 0; k--){
+                    auxStack.add(sb.charAt(k));
+                }
+
                 String s = transitions.get(c).get(i);
                 //System.out.println(c + " -> " + s);
                 //System.out.println("PDA: " + PDA);
-                Stack<Character> auxStack = PDA;
                 for(int j = s.length()-1; j >= 0; j--){
                     auxStack.add(s.charAt(j));
                 }
-                possibleWays.add(auxStack);
+                System.out.println(auxStack);
+                checkString(auxStack, testString);
             }
-
-            
-
         }else{
             if(c == testString.charAt(0)){
                 testString = testString.substring(1);
